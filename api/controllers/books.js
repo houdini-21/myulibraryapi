@@ -12,7 +12,7 @@ const addNewBook = (req, res, next) => {
       stock: stock,
     }).then((book) => {
       if (book.length > 0) {
-        return reject("Book is already added");
+        resolve(res.status(401).json({ message: "Book already exists" }));
       } else {
         let newBook = new BooksModel({
           title: title,
