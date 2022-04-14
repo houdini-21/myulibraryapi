@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const middlewares = require("../libs/middleware/auth");
 const booksHttpHandler = require("../controllers/books");
+const requestsHttpHandler = require("../controllers/requests");
 const authHttpHandler = require("../libs/auth/auth");
 
 router.get("/", middlewares.isLibrarian, (req, res) => {
@@ -15,7 +16,7 @@ router
   .post(middlewares.isLibrarian, authHttpHandler.createUser);
 
 router
-  .route("/returnBook/:idBook")
-  .get(middlewares.isLibrarian, booksHttpHandler.increaseStock);
+  .route("/returnBook/:idRequest")
+  .get(middlewares.isLibrarian, requestsHttpHandler.ReturnBook);
 
 exports.router = router;

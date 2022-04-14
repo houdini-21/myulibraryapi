@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const middlewares = require("../libs/middleware/auth");
+const requestsHttpHandler = require("../controllers/requests");
 const booksHttpHandler = require("../controllers/books");
 
 router
@@ -13,10 +14,11 @@ router
 
 router
   .route("/books/details/:idBook")
-  .get(middlewares.protectWithJwt, booksHttpHandler.getBookById); 
+  .get(middlewares.protectWithJwt, booksHttpHandler.getBookById);
 
 router
-  .route("/requestedBook/:idBook")
-  .get(middlewares.protectWithJwt, booksHttpHandler.lowerStock);
+  .route("/books/requestedBook")
+  .post(middlewares.protectWithJwt, requestsHttpHandler.RequestedBook);
+  
 
 exports.router = router;

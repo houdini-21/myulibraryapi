@@ -4,12 +4,14 @@ const BooksModel = require("../models/BooksModel");
 const addNewBook = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
     let { title, author, publishedYear, genre, stock } = req.body;
+    if (!title || !author || !publishedYear || !genre || !stock || stock <= 0) {
+      return reject(res.status(400).json({ message: "Missing data" }));
+    }
     BooksModel.find({
       title: title,
       author: author,
       publishedYear: publishedYear,
       genre: genre,
-      stock: stock,
     }).then((book) => {
       if (book.length > 0) {
         resolve(res.status(401).json({ message: "Book already exists" }));
