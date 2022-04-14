@@ -13,12 +13,15 @@ router
   .get(middlewares.protectWithJwt, booksHttpHandler.getBooksByPagination);
 
 router
+  .route("/books/search")
+  .post(middlewares.protectWithJwt, booksHttpHandler.searchBook);
+
+router
   .route("/books/details/:idBook")
   .get(middlewares.protectWithJwt, booksHttpHandler.getBookById);
 
 router
   .route("/books/requestedBook")
   .post(middlewares.protectWithJwt, requestsHttpHandler.RequestedBook);
-  
 
 exports.router = router;
