@@ -91,9 +91,23 @@ const getBooks = (req, res, next) => {
   });
 };
 
+//get book by id
+const getBookById = (req, res, next) => {
+  return new Promise(async (resolve, reject) => {
+    let { idBook } = req.params;
+    BooksModel.findById(idBook).then((book) => {
+      if (book) {
+        resolve(res.status(200).json(book));
+      } else {
+        resolve(res.status(401).json({ message: "Book not found" }));
+      }
+    });
+  });
+};
+
 exports.addNewBook = addNewBook;
 exports.lowerStock = lowerStock;
 exports.increaseStock = increaseStock;
 exports.getBooks = getBooks;
 exports.getBooksByPagination = getBooksByPagination;
-
+exports.getBookById = getBookById;

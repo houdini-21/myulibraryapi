@@ -12,11 +12,11 @@ router
   .get(middlewares.protectWithJwt, booksHttpHandler.getBooksByPagination);
 
 router
-  .route("/requestedBook/:idBook")
-  .get(middlewares.protectWithJwt, booksHttpHandler.lowerStock);
+  .route("/books/details/:idBook")
+  .get(middlewares.protectWithJwt, booksHttpHandler.getBookById); 
 
 router
-  .route("/returnBook/:idBook")
-  .get(middlewares.protectWithJwt, booksHttpHandler.increaseStock);
+  .route("/requestedBook/:idBook")
+  .get(middlewares.protectWithJwt, booksHttpHandler.lowerStock);
 
 exports.router = router;

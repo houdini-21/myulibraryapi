@@ -14,6 +14,8 @@ router
   .route("/createUsers")
   .post(middlewares.isLibrarian, authHttpHandler.createUser);
 
-
+router
+  .route("/returnBook/:idBook")
+  .get(middlewares.isLibrarian, booksHttpHandler.increaseStock);
 
 exports.router = router;
