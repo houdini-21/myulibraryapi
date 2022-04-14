@@ -32,7 +32,6 @@ const RequestedBook = (req, res, next) => {
   });
 };
 
-// update requestedBook by id
 const ReturnBook = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
     let id = req.params.idRequest;

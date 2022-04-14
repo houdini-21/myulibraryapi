@@ -1,7 +1,7 @@
 const uuid = require("uuid");
 const BooksModel = require("../models/BooksModel");
 
-const addNewBook = (req, res, next) => {
+const addNewBook = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { title, author, publishedYear, genre, stock } = req.body;
     if (!title || !author || !publishedYear || !genre || !stock || stock <= 0) {
@@ -30,8 +30,7 @@ const addNewBook = (req, res, next) => {
   });
 };
 
-//get list of books by pagination
-const getBooksByPagination = (req, res, next) => {
+const getBooksByPagination = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { page } = req.params;
     let limit = 1;
@@ -49,7 +48,7 @@ const getBooksByPagination = (req, res, next) => {
   });
 };
 
-const getBooks = (req, res, next) => {
+const getBooks = (req, res) => {
   return new Promise(async (resolve, reject) => {
     BooksModel.find().then((books) => {
       resolve(res.status(200).json({ books: books }));
@@ -57,8 +56,7 @@ const getBooks = (req, res, next) => {
   });
 };
 
-//get book by id
-const getBookById = (req, res, next) => {
+const getBookById = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { idBook } = req.params;
     BooksModel.findById(idBook).then((book) => {
@@ -71,8 +69,8 @@ const getBookById = (req, res, next) => {
   });
 };
 
-//search book by title, author or publishedYear or genre
-const searchBook = (req, res, next) => {
+
+const searchBook = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { title, author, publishedYear, genre } = req.body;
     if (!title && !author && !publishedYear && !genre) {
