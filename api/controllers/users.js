@@ -1,7 +1,7 @@
-const uuid = require('uuid');
-const crypt = require('../libs/crypt/crypt');
-const UserModel = require('../models/UserModel');
-const { to } = require('../libs/to/to');
+const uuid = require("uuid");
+const crypt = require("../libs/crypt/crypt");
+const UserModel = require("../models/UserModel");
+const { to } = require("../libs/to/to");
 
 const registerUser = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -10,7 +10,7 @@ const registerUser = (data) => {
       email: email,
     }).then((user) => {
       if (user.length > 0) {
-        return reject('Email already in use');
+        return reject("Email already in use");
       } else {
         let hashedPwd = crypt.hashPasswordSync(password);
         // Guardar en la base de datos nuestro usuario
@@ -42,11 +42,13 @@ const getUser = (userId) => {
 
 const getUserIdFromEmail = (email) => {
   return new Promise(async (resolve, reject) => {
-    let [err, result] = await to(UserModel.findOne({ email: email }).exec());
-    if (err) {
-      return reject(err);
-    }
-    resolve(result);
+    UserModel.findOne({ email: email }).then((user) => {
+      if (user) {
+        resolve(user);
+      } else {
+        reject("User not found");
+      }
+    });
   });
 };
 

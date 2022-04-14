@@ -14,9 +14,7 @@ const addNewBook = (req, res, next) => {
       if (book.length > 0) {
         resolve(res.status(401).json({ message: "Book already exists" }));
       } else {
-        let bookId = uuid.v4();
         let newBook = new BooksModel({
-          bookId: bookId,
           title: title,
           author: author,
           publishedYear: publishedYear,
@@ -34,7 +32,7 @@ const addNewBook = (req, res, next) => {
 const lowerStock = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
     let { idBook } = req.params;
-    BooksModel.findOne({ bookId: idBook }).then((book) => {
+    BooksModel.findById(idBook).then((book) => {
       if (book) {
         if (book.stock > 0) {
           book.stock = book.stock - 1;
@@ -54,7 +52,7 @@ const lowerStock = (req, res, next) => {
 const increaseStock = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
     let { idBook } = req.params;
-    BooksModel.findOne({ bookId: idBook }).then((book) => {
+    BooksModel.findById(idBook).then((book) => {
       if (book) {
         book.stock = book.stock + 1;
         book.save();
@@ -66,6 +64,36 @@ const increaseStock = (req, res, next) => {
   });
 };
 
+//get list of books by pagination
+const getBooksByPagination = (req, res, next) => {
+  return new Promise(async (resolve, reject) => {
+    let { page } = req.params;
+    let limit = 1;
+    let offset = (page - 1) * limit;
+    BooksModel.find({})
+      .skip(offset)
+      .limit(limit)
+      .then((books) => {
+        if (books.length > 0) {
+          resolve(res.status(200).json({ books: books }));
+        } else {
+          resolve(res.status(401).json({ message: "No books found" }));
+        }
+      });
+  });
+};
+
+const getBooks = (req, res, next) => {
+  return new Promise(async (resolve, reject) => {
+    BooksModel.find().then((books) => {
+      resolve(res.status(200).json({ books: books }));
+    });
+  });
+};
+
 exports.addNewBook = addNewBook;
 exports.lowerStock = lowerStock;
 exports.increaseStock = increaseStock;
+exports.getBooks = getBooks;
+exports.getBooksByPagination = getBooksByPagination;
+
