@@ -5,28 +5,35 @@ const addNewBook = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { title, author, publishedYear, genre, stock } = req.body;
     if (!title || !author || !publishedYear || !genre || !stock || stock <= 0) {
-      return reject(res.status(400).json({ message: "Missing data" }));
-    }
-    BooksModel.find({
-      title: title,
-      author: author,
-      publishedYear: publishedYear,
-      genre: genre,
-    }).then((book) => {
-      if (book.length > 0) {
-        resolve(res.status(401).json({ message: "Book already exists" }));
-      } else {
-        let newBook = new BooksModel({
-          title: title,
-          author: author,
-          publishedYear: publishedYear,
-          genre: genre,
-          stock: stock,
+      resolve(res.status(400).json({ message: "Missing data" }));
+    }else {
+      BooksModel.find({
+        title: title,
+        author: author,
+        publishedYear: publishedYear,
+        genre: genre,
+      })
+        .then((book) => {
+          if (book.length > 0) {
+            resolve(res.status(401).json({ message: "Book already exists" }));
+          } else {
+            let newBook = new BooksModel({
+              title: title,
+              author: author,
+              publishedYear: publishedYear,
+              genre: genre,
+              stock: stock,
+            });
+            newBook.save();
+            resolve(res.status(200).json({ message: "Book added" }));
+          }
+        })
+        .catch((err) => {
+          resolve(res.status(500).json({ message: "Internal server error" }));
         });
-        newBook.save();
-        resolve(res.status(200).json({ message: "Book added" }));
-      }
-    });
+    }
+
+
   });
 };
 
