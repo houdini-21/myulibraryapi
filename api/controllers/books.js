@@ -33,7 +33,7 @@ const addNewBook = (req, res) => {
 const getBooksByPagination = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { page } = req.params;
-    let limit = 1;
+    let limit = 8;
     let offset = (page - 1) * limit;
     BooksModel.find({})
       .skip(offset)
@@ -50,9 +50,19 @@ const getBooksByPagination = (req, res) => {
 
 const getBooks = (req, res) => {
   return new Promise(async (resolve, reject) => {
-    BooksModel.find().then((books) => {
-      resolve(res.status(200).json({ books: books }));
-    });
+    let { page } = req.params;
+    let limit = 8;
+    let offset = (page - 1) * limit;
+    BooksModel.find({})
+      .skip(offset)
+      .limit(limit)
+      .then((books) => {
+        if (books.length > 0) {
+          resolve(res.status(200).json({ books: books }));
+        } else {
+          resolve(res.status(401).json({ message: "No books found" }));
+        }
+      });
   });
 };
 
@@ -74,7 +84,7 @@ const searchBook = (req, res) => {
     let { title, author, publishedYear, genre } = req.body;
     let { page } = req.params;
 
-    let limit = 1;
+    let limit = 8;
     let offset = (page - 1) * limit;
 
     let query = {};

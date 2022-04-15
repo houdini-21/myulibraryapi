@@ -5,9 +5,15 @@ const booksHttpHandler = require("../controllers/books");
 const requestsHttpHandler = require("../controllers/requests");
 const authHttpHandler = require("../libs/auth/auth");
 
-router.get("/", middlewares.isLibrarian, (req, res) => {
-  res.send("Admin books");
-});
+router.get(
+  "/getBooks/:page",
+  middlewares.isLibrarian,
+  booksHttpHandler.getBooks
+);
+
+router
+  .route("/getRequestedBooks/:page")
+  .post(middlewares.isLibrarian, requestsHttpHandler.getRequestedBooks);
 
 router.route("/add").post(middlewares.isLibrarian, booksHttpHandler.addNewBook);
 

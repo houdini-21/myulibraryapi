@@ -18,7 +18,7 @@ const loginUser = async (req, res) => {
   }
 
   let user = await userController.getUserIdFromEmail(req.body.email);
-  const token = jwt.sign({ userId: user.userId, role: user.role }, process.env.KEY);
+  const token = jwt.sign({ userId: user._id, role: user.role }, process.env.KEY);
   res.status(200).json({ message: 'User login successful', token: token });
 };
 

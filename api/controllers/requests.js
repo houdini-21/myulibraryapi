@@ -60,5 +60,56 @@ const ReturnBook = (req, res, next) => {
   });
 };
 
+const getMyRequest = (req, res, next) => {
+  return new Promise(async (resolve, reject) => {
+    let idStudent = req.body.idStudent;
+    let page = req.params.page;
+    let limit = 8;
+    let offset = (page - 1) * limit;
+    let [err, result] = await to(
+      RequestedModel.find({ idStudent: idStudent })
+        .populate("idBook")
+        .skip(offset)
+        .limit(limit)
+        .exec()
+    );
+    if (err) {
+      return reject(err);
+    }
+
+    resolve(res.status(200).json({ books: result }));
+  });
+};
+
+//getRequestedBooks
+const getRequestedBooks = (req, res, next) => {
+  return new Promise(async (resolve, reject) => {
+    let page = req.params.page;
+    let { idStudent } = req.body;
+    let limit = 8;
+    let offset = (page - 1) * limit;
+    let query = {};
+    if (idStudent) {
+      query = { idStudent: idStudent };
+    }
+
+    let [err, result] = await to(
+      RequestedModel.find(query)
+        .populate("idBook")
+        .populate("idStudent")
+        .skip(offset)
+        .limit(limit)
+        .exec()
+    );
+    if (err) {
+      return reject(err);
+    }
+
+    resolve(res.status(200).json({ books: result }));
+  });
+};
+
 exports.RequestedBook = RequestedBook;
 exports.ReturnBook = ReturnBook;
+exports.getMyRequest = getMyRequest;
+exports.getRequestedBooks = getRequestedBooks;
