@@ -89,7 +89,7 @@ const searchBook = (req, res) => {
       query.publishedYear = publishedYear;
     }
     if (genre) {
-      query.genre = genre;
+      query.genre = { $regex: genre, $options: "i" };
     }
 
     BooksModel.find(query)
