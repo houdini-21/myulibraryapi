@@ -8,12 +8,14 @@ router
   .route("/books")
   .get(middlewares.protectWithJwt, booksHttpHandler.getBooks);
 
+/**
+ * router
+  .route("/books/:page")
+  .post(middlewares.protectWithJwt, booksHttpHandler.getBooksByPagination);
+
+ */
 router
   .route("/books/:page")
-  .get(middlewares.protectWithJwt, booksHttpHandler.getBooksByPagination);
-
-router
-  .route("/books/search")
   .post(middlewares.protectWithJwt, booksHttpHandler.searchBook);
 
 router

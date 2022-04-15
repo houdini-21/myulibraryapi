@@ -69,18 +69,20 @@ const getBookById = (req, res) => {
   });
 };
 
-
 const searchBook = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { title, author, publishedYear, genre } = req.body;
-    if (!title && !author && !publishedYear && !genre) {
-      return reject(res.status(400).json({ message: "Missing data" }));
-    }
+    let { page } = req.params;
+    console.log(req.params);
+
+    let limit = 1;
+    let offset = (page - 1) * limit;
 
     let query = {};
     if (title) {
       query.title = { $regex: title, $options: "i" };
     }
+
     if (author) {
       query.author = { $regex: author, $options: "i" };
     }
@@ -91,13 +93,16 @@ const searchBook = (req, res) => {
       query.genre = genre;
     }
 
-    BooksModel.find(query).then((books) => {
-      if (books.length > 0) {
-        resolve(res.status(200).json({ books: books }));
-      } else {
-        resolve(res.status(401).json({ message: "No books found" }));
-      }
-    });
+    BooksModel.find(query)
+      .skip(offset)
+      .limit(limit)
+      .then((books) => {
+        if (books.length > 0) {
+          resolve(res.status(200).json({ books: books }));
+        } else {
+          resolve(res.status(401).json({ message: "No books found" }));
+        }
+      });
   });
 };
 

@@ -14,7 +14,7 @@ const loginUser = async (req, res) => {
   );
 
   if (err || !resp) {
-    return res.status(401).json({ message: 'Invalid credentials' });
+    return res.status(400).json({ message: 'Invalid credentials' });
   }
 
   let user = await userController.getUserIdFromEmail(req.body.email);

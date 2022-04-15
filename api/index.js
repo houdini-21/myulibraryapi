@@ -4,7 +4,7 @@ const authRoutes = require('./routes/authRoutes').router;
 const librarianRoutes = require('./routes/librarianRoutes').router;
 const studentRoutes = require('./routes/studentRoutes').router;
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 require('./libs/database/database');
 
