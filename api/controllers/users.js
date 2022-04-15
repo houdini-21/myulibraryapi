@@ -5,6 +5,7 @@ const { to } = require("../libs/to/to");
 
 const registerUser = (data) => {
   return new Promise(async (resolve, reject) => {
+    //request to check that the email to be used for the new user does not exist
     let { name, lastname, email, role, password } = data;
     UserModel.find({
       email: email,
@@ -12,8 +13,9 @@ const registerUser = (data) => {
       if (user.length > 0) {
         return reject("Email already in use");
       } else {
+        //if the email is not in use, we proceed to create the new user
+        // and encrypt the password
         let hashedPwd = crypt.hashPasswordSync(password);
-        // Guardar en la base de datos nuestro usuario
         let userId = uuid.v4();
         let newUser = new UserModel({
           userId: userId,
@@ -41,6 +43,7 @@ const getUser = (userId) => {
 };
 
 const getUserIdFromEmail = (email) => {
+  //request to get the user id from the email
   return new Promise(async (resolve, reject) => {
     UserModel.findOne({ email: email }).then((user) => {
       if (user) {
@@ -53,6 +56,7 @@ const getUserIdFromEmail = (email) => {
 };
 
 const checkUserCredentials = (email, password) => {
+  //request to check that the user credentials are correct
   return new Promise(async (resolve, reject) => {
     let [err, user] = await to(getUserIdFromEmail(email));
     if (!err || user) {
