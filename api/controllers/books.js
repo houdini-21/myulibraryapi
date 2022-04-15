@@ -73,7 +73,6 @@ const searchBook = (req, res) => {
   return new Promise(async (resolve, reject) => {
     let { title, author, publishedYear, genre } = req.body;
     let { page } = req.params;
-    console.log(req.params);
 
     let limit = 1;
     let offset = (page - 1) * limit;
