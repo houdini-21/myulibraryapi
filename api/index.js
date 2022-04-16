@@ -9,17 +9,12 @@ const PORT = 3001;
 
 var cors = require("cors");
 
-app.use(cors());
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Headers", "*");
-  next();
-});
+
 app.use(expressSanitizer());
 require("./libs/database/database");
 
 middlewares.setupMiddleware(app);
-
+app.use(cors());
 app.use("/auth", authRoutes);
 app.use("/librarian/", librarianRoutes);
 app.use("/student/", studentRoutes);
