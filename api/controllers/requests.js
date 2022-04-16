@@ -6,15 +6,15 @@ const RequestedBook = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
     let { idBook, idStudent } = req.body;
 
-    BooksModel.findOne({ _id: idBook }).then((book) => {
-      if (book) {
+    BooksModel.findOne({ _id: idBook })
+      .then((book) => {
         if (book.stock > 0) {
           book.stock = book.stock - 1;
           book.save();
 
           let newRequestedBook = new RequestedModel({
-            idBook: idBook,
-            idStudent: idStudent,
+            idBook: req.sanitize(idBook),
+            idStudent: req.sanitize(idStudent),
             dateRequest: Date.now(),
             status: false,
           });
@@ -25,10 +25,14 @@ const RequestedBook = (req, res, next) => {
         } else {
           resolve(res.status(401).json({ message: "Book out of stock" }));
         }
-      } else {
-        resolve(res.status(401).json({ message: "Book not found" }));
-      }
-    });
+      })
+      .catch((err) => {
+        reject(
+          res
+            .status(401)
+            .json({ message: "Internal server error", details: err.message })
+        );
+      });
   });
 };
 
@@ -62,10 +66,15 @@ const ReturnBook = (req, res, next) => {
 
 const getMyRequest = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
-    let idStudent = req.body.idStudent;
+    let idStudent = req.sanitize(req.body.idStudent);
     let page = req.params.page;
     let limit = 8;
     let offset = (page - 1) * limit;
+    let numPages = 1;
+    //get quantity of books and divide by limit to get the number of pages
+    const count = await BooksModel.countDocuments({ idStudent: idStudent });
+    numPages = Math.ceil(count / limit);
+
     let [err, result] = await to(
       RequestedModel.find({ idStudent: idStudent })
         .populate("idBook")
@@ -74,10 +83,10 @@ const getMyRequest = (req, res, next) => {
         .exec()
     );
     if (err) {
-      return reject(err);
+      reject(res.status(401).json({ message: "Internal server error", details: err.message }));
     }
 
-    resolve(res.status(200).json({ books: result }));
+    resolve(res.status(200).json({ numPages: numPages, books: result }));
   });
 };
 

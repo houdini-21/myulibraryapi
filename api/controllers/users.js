@@ -9,26 +9,30 @@ const registerUser = (data) => {
     let { name, lastname, email, role, password } = data;
     UserModel.find({
       email: email,
-    }).then((user) => {
-      if (user.length > 0) {
-        return reject("Email already in use");
-      } else {
-        //if the email is not in use, we proceed to create the new user
-        // and encrypt the password
-        let hashedPwd = crypt.hashPasswordSync(password);
-        let userId = uuid.v4();
-        let newUser = new UserModel({
-          userId: userId,
-          name: name,
-          lastname: lastname,
-          email: email,
-          role: role,
-          password: hashedPwd,
-        });
-        newUser.save();
-      }
-      resolve(resolve);
-    });
+    })
+      .then((user) => {
+        if (user.length > 0) {
+          return reject("Email already in use");
+        } else {
+          //if the email is not in use, we proceed to create the new user
+          // and encrypt the password
+          let hashedPwd = crypt.hashPasswordSync(password);
+          let userId = uuid.v4();
+          let newUser = new UserModel({
+            userId: userId,
+            name: name,
+            lastname: lastname,
+            email: email,
+            role: role,
+            password: hashedPwd,
+          });
+          newUser.save();
+        }
+        resolve(resolve);
+      })
+      .catch((err) => {
+        reject(err);
+      });
   });
 };
 

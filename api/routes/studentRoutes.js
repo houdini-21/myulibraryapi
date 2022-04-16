@@ -24,7 +24,6 @@ router
   .route("/books/requestedBook")
   .post(middlewares.protectWithJwt, requestsHttpHandler.RequestedBook);
 
-
 router
   .route("/books/myrequests/:page")
   .post(middlewares.protectWithJwt, requestsHttpHandler.getMyRequest);
