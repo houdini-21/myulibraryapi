@@ -21,8 +21,8 @@ router
   .get(middlewares.protectWithJwt, booksHttpHandler.getBookById);
 
 router
-  .route("/books/requestedBook")
-  .post(middlewares.protectWithJwt, requestsHttpHandler.RequestedBook);
+  .route("/books/requestbook")
+  .post(middlewares.protectWithJwt, requestsHttpHandler.RequestBook);
 
 router
   .route("/books/myrequests/:page")

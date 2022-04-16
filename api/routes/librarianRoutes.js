@@ -22,7 +22,7 @@ router
   .post(middlewares.isLibrarian, authHttpHandler.createUser);
 
 router
-  .route("/returnBook/:idRequest")
-  .get(middlewares.isLibrarian, requestsHttpHandler.ReturnBook);
+  .route("/returnBook")
+  .post(middlewares.isLibrarian, requestsHttpHandler.ReturnBook);
 
 exports.router = router;

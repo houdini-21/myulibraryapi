@@ -2,16 +2,17 @@ const RequestedModel = require("../models/RequestedModel");
 const BooksModel = require("../models/BooksModel");
 const { to } = require("../libs/to/to");
 
-const RequestedBook = (req, res, next) => {
+const RequestBook = (req, res, next) => {
   return new Promise(async (resolve, reject) => {
     let { idBook, idStudent } = req.body;
-
+    //request to check if stock is available
     BooksModel.findOne({ _id: idBook })
       .then((book) => {
         if (book.stock > 0) {
           book.stock = book.stock - 1;
           book.save();
 
+          //if the book is available, request to save the book request
           let newRequestedBook = new RequestedModel({
             idBook: req.sanitize(idBook),
             idStudent: req.sanitize(idStudent),
@@ -37,8 +38,10 @@ const RequestedBook = (req, res, next) => {
 };
 
 const ReturnBook = (req, res, next) => {
+  //request to return book to library
   return new Promise(async (resolve, reject) => {
-    let id = req.params.idRequest;
+    let id = req.sanitize(req.body.idRequest);
+    //request to update book history
     let [err, result] = await to(
       RequestedModel.findOneAndUpdate(
         { _id: id },
@@ -46,9 +49,16 @@ const ReturnBook = (req, res, next) => {
       ).exec()
     );
     if (err) {
-      return reject(err);
+      reject(
+        res
+          .status(401)
+          .json({ message: "Internal server error", details: err.message })
+      );
     }
-
+    if (!result) {
+      resolve(res.status(401).json({ message: "Request not found" }));
+    }
+    //request to update book stock
     let [err2, result2] = await to(
       BooksModel.findOneAndUpdate(
         { _id: result.idBook },
@@ -57,7 +67,11 @@ const ReturnBook = (req, res, next) => {
       )
     );
     if (err2) {
-      return reject(err2);
+      reject(
+        res
+          .status(401)
+          .json({ message: "Internal server error", details: err2.message })
+      );
     }
 
     resolve(res.status(200).json({ message: "Book returned successful" }));
@@ -72,8 +86,10 @@ const getMyRequest = (req, res, next) => {
     let offset = (page - 1) * limit;
     let numPages = 1;
     //get quantity of books and divide by limit to get the number of pages
-    const count = await BooksModel.countDocuments({ idStudent: idStudent });
+    const count = await RequestedModel.countDocuments({ idStudent: idStudent });
     numPages = Math.ceil(count / limit);
+
+    //request to get all requested books by student
 
     let [err, result] = await to(
       RequestedModel.find({ idStudent: idStudent })
@@ -83,15 +99,19 @@ const getMyRequest = (req, res, next) => {
         .exec()
     );
     if (err) {
-      reject(res.status(401).json({ message: "Internal server error", details: err.message }));
+      reject(
+        res
+          .status(401)
+          .json({ message: "Internal server error", details: err.message })
+      );
     }
 
     resolve(res.status(200).json({ numPages: numPages, books: result }));
   });
 };
 
-//getRequestedBooks
 const getRequestedBooks = (req, res, next) => {
+  //request to get all requested books
   return new Promise(async (resolve, reject) => {
     let page = req.params.page;
     let { idStudent } = req.body;
@@ -99,8 +119,11 @@ const getRequestedBooks = (req, res, next) => {
     let offset = (page - 1) * limit;
     let query = {};
     if (idStudent) {
-      query = { idStudent: idStudent };
+      query = { idStudent: req.sanitize(idStudent) };
     }
+    //get quantity of books and divide by limit to get the number of pages
+    const count = await RequestedModel.countDocuments(query);
+    numPages = Math.ceil(count / limit);
 
     let [err, result] = await to(
       RequestedModel.find(query)
@@ -111,14 +134,18 @@ const getRequestedBooks = (req, res, next) => {
         .exec()
     );
     if (err) {
-      return reject(err);
+      reject(
+        res
+          .status(401)
+          .json({ message: "Internal server error", details: err.message })
+      );
     }
 
-    resolve(res.status(200).json({ books: result }));
+    resolve(res.status(200).json({ numPages: numPages, books: result }));
   });
 };
 
-exports.RequestedBook = RequestedBook;
+exports.RequestBook = RequestBook;
 exports.ReturnBook = ReturnBook;
 exports.getMyRequest = getMyRequest;
 exports.getRequestedBooks = getRequestedBooks;
