@@ -130,7 +130,7 @@ const searchBook = (req, res) => {
     let { title, author, publishedYear, genre } = req.body;
     let { page } = req.params;
 
-    let limit = 8;
+    let limit = 8
     let offset = (page - 1) * limit;
 
     let query = {};
@@ -159,7 +159,7 @@ const searchBook = (req, res) => {
         if (books.length > 0) {
           resolve(res.status(200).json({ numPages: numPages, books: books }));
         } else {
-          resolve(res.status(401).json({ message: "No books found" }));
+          resolve(res.status(200).json({ message: "No books found", books: [] }));
         }
       })
       .catch((err) => {
