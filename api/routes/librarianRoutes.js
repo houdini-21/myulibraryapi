@@ -21,8 +21,16 @@ router
   .route("/createUsers")
   .post(middlewares.isLibrarian, authHttpHandler.createUser);
 
+  router
+  .route("/books/details/:idBook")
+  .get(middlewares.protectWithJwt, booksHttpHandler.getBookById);
+
 router
   .route("/returnBook")
   .post(middlewares.isLibrarian, requestsHttpHandler.ReturnBook);
+
+router
+  .route("/requestBookDetail/:requestId")
+  .get(middlewares.isLibrarian, requestsHttpHandler.getRequestById);
 
 exports.router = router;

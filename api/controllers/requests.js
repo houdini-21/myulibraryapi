@@ -145,7 +145,32 @@ const getRequestedBooks = (req, res, next) => {
   });
 };
 
+//function to get details about a request by id
+const getRequestById = (req, res, next) => {
+  return new Promise(async (resolve, reject) => {
+    let requestId = req.params.requestId;
+    let [err, result] = await to(
+      RequestedModel.findOne({ _id: requestId })
+        .populate("idBook")
+        .populate("idStudent")
+        .exec()
+    );
+    if (err) {
+      reject(
+        res
+          .status(401)
+          .json({ message: "Internal server error", details: err.message })
+      );
+    }
+    if (!result) {
+      resolve(res.status(401).json({ message: "Request not found" }));
+    }
+    resolve(res.status(200).json({ result }));
+  });
+};
+
 exports.RequestBook = RequestBook;
 exports.ReturnBook = ReturnBook;
 exports.getMyRequest = getMyRequest;
 exports.getRequestedBooks = getRequestedBooks;
+exports.getRequestById = getRequestById;
